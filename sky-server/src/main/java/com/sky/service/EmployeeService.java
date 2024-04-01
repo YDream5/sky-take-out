@@ -18,7 +18,7 @@ public interface EmployeeService {
 
     /**
      * 新增员工
-     * @param emp
+     * @param empDTO
      */
     void save(EmployeeDTO empDTO);
 

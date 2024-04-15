@@ -13,7 +13,12 @@ spring:
       username: ${sky.datasource.username}
       password: ${sky.datasource.password}
 
-
+  #redis配置，记得配置密码
+  redis:
+    host: ${sky.redis.host}
+    port: ${sky.redis.port}
+    database: ${sky.redis.database}
+    password: ${sky.redis.password}
 
 mybatis:
   #mapper配置文件
@@ -39,6 +44,27 @@ sky:
     admin-ttl: 7200000
     # 设置前端传递过来的令牌名称
     admin-token-name: token
+
+    ## 微信登陆单独返回的jwt令牌
+    user-secret-key: itheima
+    user-ttl: 720000
+
+    #这个是和前端沟通好的名字，不要写错
+    user-token-name: authentication
+
+
+
+  alioss:
+    endpoint: ${sky.alioss.endpoint}
+    access-key-id: ${sky.alioss.access-key-id}
+    access-key-secret: ${sky.alioss.access-key-secret}
+    bucket-name: ${sky.alioss.bucket-name}
+
+    # 微信登陆配置
+  wechat:
+    appid: ${sky.wechat.appid}
+    secret: ${sky.wechat.secret}
+
 
 
 

@@ -11,9 +11,11 @@ import io.swagger.annotations.Api;
 import io.swagger.annotations.ApiOperation;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.data.redis.core.RedisTemplate;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
+import java.util.Set;
 
 /**
  * @author wyj
@@ -27,6 +29,19 @@ public class DishController {
 
     @Autowired//只有实现了对应的类才能注入成功
     private DishService dishService;
+    @Autowired
+    private RedisTemplate redisTemplate;
+
+    /**
+     * 清除redis的缓存数据
+     * @param pattern
+     */
+    private void clearCache(String pattern){
+        Set keys=redisTemplate.keys(pattern);
+        redisTemplate.delete(keys);
+
+
+    }
 
     /**
      * 新增菜品
@@ -39,6 +54,12 @@ public class DishController {
         log.info("{}",dishDTO);
 
         dishService.saveWithFlavor(dishDTO);
+
+        //精确清理缓存
+        String key="dish_"+dishDTO.getCategoryId();
+        clearCache(key);
+
+
         return Result.success();
 
     }
@@ -54,6 +75,7 @@ public class DishController {
     @GetMapping("/page")
     @ApiOperation("菜品分页查询")
     public Result<PageResult> page( DishPageQueryDTO dishPageQueryDTO){
+
         log.info("接收到{}",dishPageQueryDTO);
         PageResult pageResult= dishService.pageQuery(dishPageQueryDTO);
 
@@ -68,8 +90,16 @@ public class DishController {
     @DeleteMapping
     @ApiOperation("批量删除菜品")
     public  Result delete(@RequestParam List<Long> ids){
+
+
         log.info("要删除的ids{}",ids);
         dishService.deleteBatch(ids);
+
+        //删除完成后清空缓存
+        clearCache("dish_*");
+
+
+
         return Result.success();
     }
 
@@ -98,6 +128,8 @@ public class DishController {
         log.info("菜品DTO{}",dishDTO);
         dishService.updateWithFlavor(dishDTO);
 
+        //删除完成后清空缓存
+        clearCache("dish_*");
         return Result.success();
     }
 }

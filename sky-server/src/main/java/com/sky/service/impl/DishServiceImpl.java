@@ -82,7 +82,7 @@ public class DishServiceImpl implements DishService {
 
 
         //如果菜品在套餐中不能删除
-        List<Long> setmealIds=setmealDishMapper.getSetmeanIdsByDishIds(ids);
+        List<Long> setmealIds=setmealDishMapper.getSetmealIdsByDishIds(ids);
         if(setmealIds!=null&&setmealIds.size()>0){
             throw new DeletionNotAllowedException(MessageConstant.DISH_BE_RELATED_BY_SETMEAL);
         }
@@ -100,6 +100,7 @@ public class DishServiceImpl implements DishService {
 
     @Override
     public DishVO getByIdWithFlavor(Long id) {
+
         DishVO dishVO=new DishVO();
        Dish dish =dishMapper.getById(id);
 

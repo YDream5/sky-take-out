@@ -24,40 +24,35 @@ import java.util.Map;
  * @author wyj
  * @version 1.0
  */
-@RestController
-@Api(tags="C端用户登录相关接口")
-@Slf4j
-@RequestMapping("/user/user")
-public class UserController {
-//写了个todo
-    @Autowired
-    private UserService userService;
-    @Autowired
-    private JwtProperties jwtProperties;
-    /**
-     * 微信登陆
-     * @param userLoginDTO
-     * @return
-     */
-    @PostMapping("/login")
-    @ApiOperation("微信登陆")
-    public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){
 
-        log.info("接受的微信登陆参数{}",userLoginDTO);
-        //微信登陆
+@Slf4j
+@Api("微信用户相关接口")
+@RestController
+@RequestMapping("/user/user")
+public class UserController{
+    @Autowired
+    UserService userService;
+
+    @Autowired
+    JwtProperties jwtProperties;
+
+
+    @PostMapping("/login")
+    @ApiOperation("微信用户登录")
+    public Result<UserLoginVO> login(@RequestBody UserLoginDTO userLoginDTO){
+        log.info("接收到{}",userLoginDTO);
+
         User user=userService.wxLogin(userLoginDTO);
 
-        Map<String, Object>claims = new HashMap<>();
+        Map<String,Object>claims=new HashMap<>();
         claims.put(JwtClaimsConstant.USER_ID,user.getId());
 
-        //生成jwt令牌
-        String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(),
+        String token = JwtUtil.createJWT(jwtProperties.getUserSecretKey(), jwtProperties.getUserTtl(), claims);
 
-                claims);
-
-        UserLoginVO userLoginVO = UserLoginVO.builder().id(user.getId())
-                .openid(user.getOpenid())
+        UserLoginVO userLoginVO = UserLoginVO.builder().id(user.getId()).openid(user.getOpenid())
                 .token(token).build();
+
         return Result.success(userLoginVO);
     }
+
 }

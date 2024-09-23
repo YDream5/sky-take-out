@@ -1,5 +1,6 @@
 package com.sky.service.impl;
 
+import com.github.pagehelper.Constant;
 import com.github.pagehelper.Page;
 import com.github.pagehelper.PageHelper;
 import com.sky.constant.MessageConstant;
@@ -69,67 +70,10 @@ public class EmployeeServiceImpl implements EmployeeService {
         return employee;
     }
 
-    /**
-     * 新增员工
-     * @param empDTO
-     */
-    @Override
-    public void save(EmployeeDTO empDTO) {
-
-        Employee emp=new Employee();
-        //对象属性拷贝
-
-        BeanUtils.copyProperties(empDTO,emp);
-
-        //通过常量设置状态和默认密码
-        emp.setStatus(StatusConstant.ENABLE);
-        emp.setPassword( DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
-
-//
-//        emp.setCreateTime(LocalDateTime.now());
-//        emp.setUpdateTime(LocalDateTime.now());
-//
-//        //设置当前创建或修改人的id 通过ThreadLocal
-//        emp.setCreateUser(BaseContext.getCurrentId());
-//        emp.setUpdateUser(BaseContext.getCurrentId());
 
 
-        employeeMapper.insert(emp);
-    }
 
 
-    /**
-     * 员工分页查询
-     * @param employeePageQueryDTO
-     * @return
-     */
-    @Override
-    public PageResult page(EmployeePageQueryDTO employeePageQueryDTO) {
-
-
-         PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
-
-        Page<Employee> page=employeeMapper.page(employeePageQueryDTO);
-
-        Long total=page.getTotal();
-        List<Employee> records=page.getResult();
-        return new PageResult(total,records);
-    }
-
-    /**
-     * 启用或禁用账号
-     * @param status
-     * @param id
-     */
-    @Override
-    public void startOrStop(Integer status, Long id) {
-
-        Employee employee = Employee.builder().status(status)
-                .id(id).build();
-
-        employeeMapper.update(employee);
-
-    }
 
     @Override
     public Employee getById(Long id) {
@@ -157,5 +101,62 @@ public class EmployeeServiceImpl implements EmployeeService {
 //        emp.setUpdateUser(BaseContext.getCurrentId());
 
         employeeMapper.update(emp);
+    }
+
+    /**
+     * 新增员工
+     * @param employeeDTO
+     */
+    @Override
+    public void save(EmployeeDTO employeeDTO) {
+        Employee employee=new Employee();
+        //拷贝对应的属性
+        BeanUtils.copyProperties(employeeDTO,employee);
+        //设置状态属性和密码
+        employee.setStatus(StatusConstant.ENABLE);
+        employee.setPassword(DigestUtils.md5DigestAsHex(PasswordConstant.DEFAULT_PASSWORD.getBytes()));
+
+//         已经使用AOP切面改善代码
+//        emp.setCreateTime(LocalDateTime.now());
+//        emp.setUpdateTime(LocalDateTime.now());
+//
+//        //设置当前创建或修改人的id 通过ThreadLocal
+//        emp.setCreateUser(BaseContext.getCurrentId());
+//        emp.setUpdateUser(BaseContext.getCurrentId());
+
+        employeeMapper.insert(employee);
+
+
+    }
+
+    /**
+     * 员工分页查询
+     * @param employeePageQueryDTO
+     * @return
+     */
+    @Override
+    public PageResult pageQuery(EmployeePageQueryDTO employeePageQueryDTO) {
+
+        PageHelper.startPage(employeePageQueryDTO.getPage(),employeePageQueryDTO.getPageSize());
+
+        Page<Employee> page=employeeMapper.pageQuery(employeePageQueryDTO);
+
+        Long total=page.getTotal();//注意这里是gettotal 不是getsize
+        List<Employee>records=page.getResult();
+
+       return new PageResult(total,records);
+    }
+
+    /**
+     * 启用或禁用员工账号
+     * @param status
+     * @param id
+     */
+    @Override
+    public void startOrStop(Integer status, Long id) {
+
+        Employee employee=Employee.builder().id(id).status(status).build();
+        employeeMapper.update(employee);
+
     }
 }

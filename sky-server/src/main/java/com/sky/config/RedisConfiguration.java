@@ -28,9 +28,6 @@ public class RedisConfiguration {
         //设置 redis 的key序列化器
         redisTemplate.setKeySerializer(new StringRedisSerializer());
 
-
-
-
         return redisTemplate;
 
 

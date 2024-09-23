@@ -40,7 +40,6 @@ public class DishController {
         Set keys=redisTemplate.keys(pattern);
         redisTemplate.delete(keys);
 
-
     }
 
     /**
@@ -132,4 +131,35 @@ public class DishController {
         clearCache("dish_*");
         return Result.success();
     }
+
+    /**
+     * 根据分类id查询菜品列表（其实是套餐中的菜品）
+     * @param categoryId
+     * @return
+     */
+    @GetMapping("/list")
+    @ApiOperation("根据分类id查询菜品")
+    public Result<List<Dish>> list( Long categoryId){
+        log.info("接收到{}",categoryId);
+       List<Dish>dishlists= dishService.list(categoryId);
+
+       return Result.success(dishlists);
+
+
+    }
+
+
+    @PostMapping("/status/{status}")
+    @ApiOperation("起售或禁售菜品")
+    public Result startOrStop(@PathVariable Integer status,Long id )
+    {
+        log.info("接收到修改状态{},菜品id{}",status,id);
+
+        dishService.startOrstop(status,id);
+
+        return Result.success();
+
+
+    }
+
 }

@@ -42,7 +42,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     protected void addInterceptors(InterceptorRegistry registry) {
         log.info("开始注册自定义拦截器...");
         registry.addInterceptor(jwtTokenAdminInterceptor)
-                .addPathPatterns("/admin/**")
+                .addPathPatterns( "/admin/**")
                 .excludePathPatterns("/admin/employee/login");
         registry.addInterceptor(jwtTokenUserInterceptor)
                 .addPathPatterns("/user/**")
@@ -105,9 +105,10 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
     }
 
     /**
-     * 设置静态资源映射
+     * 设置静态资源映射 用于生成swagger文档
      * @param registry
      */
+    @Override
     protected void addResourceHandlers(ResourceHandlerRegistry registry) {
         log.info("开始设置静态资源映射");
 
@@ -120,6 +121,7 @@ public class WebMvcConfiguration extends WebMvcConfigurationSupport {
      * 消息扩展转换器，对后端返回前端的数据（注意是json)处理
      * @param converters
      */
+    //主要用于处理返回日期和时间不一致的问题
     @Override
     protected void extendMessageConverters(List<HttpMessageConverter<?>> converters) {
 

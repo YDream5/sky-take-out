@@ -43,26 +43,20 @@ public class EmployeeController {
     @PostMapping("/login")
     @ApiOperation(value = "员工登陆")
     public Result<EmployeeLoginVO> login(@RequestBody EmployeeLoginDTO employeeLoginDTO) {
-        log.info("员工登录：{}", employeeLoginDTO);
-
+      log.info("接受到loginemployee",employeeLoginDTO);
         Employee employee = employeeService.login(employeeLoginDTO);
 
-        //登录成功后，生成jwt令牌
-        Map<String, Object> claims = new HashMap<>();
-        claims.put(JwtClaimsConstant.EMP_ID, employee.getId());
-        String token = JwtUtil.createJWT(
-                jwtProperties.getAdminSecretKey(),
-                jwtProperties.getAdminTtl(),
-                claims);
+        //封装生成JWT
+        Map<String,Object>claims=new HashMap<>();
+        claims.put(JwtClaimsConstant.EMP_ID,employee.getId());
 
-        EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder()
-                .id(employee.getId())
-                .userName(employee.getUsername())
-                .name(employee.getName())
-                .token(token)
-                .build();
+        String token = JwtUtil.createJWT(jwtProperties.getAdminSecretKey(), jwtProperties.getAdminTtl(), claims);
 
-        return Result.success(employeeLoginVO);
+        EmployeeLoginVO employeeLoginVO = EmployeeLoginVO.builder().token(token)
+                .id(employee.getId()).name(employee.getName()).build();
+
+
+    return Result.success(employeeLoginVO);
     }
 
     /**
@@ -76,20 +70,22 @@ public class EmployeeController {
         return Result.success();
     }
 
-
     /**
+     *
      * 新增员工
-     * @param empDTO
+     * @param employeeDTO
      * @return
      */
-    @PostMapping
+    @PostMapping()
     @ApiOperation("新增员工")
-    public Result save(@RequestBody EmployeeDTO empDTO){
-        log.info("接收到{}",empDTO);
-        employeeService.save(empDTO);
+
+    public Result save(@RequestBody EmployeeDTO employeeDTO){
+        log.info("接收到{}",employeeDTO);
+        employeeService.save(employeeDTO);
         return Result.success();
 
     }
+
 
     /**
      * 员工分页查询
@@ -98,12 +94,12 @@ public class EmployeeController {
      */
     @GetMapping("/page")
     @ApiOperation("员工分页查询")
-    public Result<PageResult>  page(EmployeePageQueryDTO employeePageQueryDTO){
-        log.info("分页查询{}",employeePageQueryDTO);
+    public Result<PageResult> page( EmployeePageQueryDTO employeePageQueryDTO){
+        log.info("接收到{}",employeePageQueryDTO);
+      PageResult pageResult= employeeService.pageQuery(employeePageQueryDTO);
 
-        PageResult pageResult= employeeService.page(employeePageQueryDTO);
+       return Result.success(pageResult);
 
-        return Result.success(pageResult);
 
     }
 
@@ -114,10 +110,9 @@ public class EmployeeController {
      * @return
      */
     @PostMapping("/status/{status}")
-    @ApiOperation("启用或禁用员工账号")
-    public  Result startOrStop(@PathVariable Integer status, Long id){
-        log.info("状态{},id{}",status,id);
-
+    @ApiOperation("启用禁用员工账号")
+    public Result startOrStop(@PathVariable Integer status,Long id){
+        log.info("接收到{},{}",status,id);
         employeeService.startOrStop(status,id);
         return Result.success();
 
@@ -131,11 +126,15 @@ public class EmployeeController {
     @GetMapping("/{id}")
     @ApiOperation("根据id查询员工")
     public Result<Employee> getById(@PathVariable Long id){
-        log.info("id为{}",id);
-        Employee employee=employeeService.getById(id);
+
+        log.info("接收到{}",id);
+        Employee employee = employeeService.getById(id);
         return Result.success(employee);
 
     }
+
+
+
 
     /**
      * 修改员工

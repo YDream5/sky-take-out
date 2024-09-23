@@ -23,7 +23,7 @@ public interface CategoryService {
 
     /**
      * 根据id删除分类
-     * @param id
+     * @pa ram id
      */
     void deleteById(Long id);
 

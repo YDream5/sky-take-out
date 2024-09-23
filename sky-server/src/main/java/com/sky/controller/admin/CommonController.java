@@ -40,9 +40,6 @@ public class CommonController {
         log.info("文件上传{}",file);
         log.info("{},{}",file.getName(),file.getOriginalFilename());
         //上传到阿里云的bucket
-
-
-
         try {
             String orgFilename= file.getOriginalFilename();
 

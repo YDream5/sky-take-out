@@ -26,7 +26,7 @@ import java.util.Map;
  */
 
 @Slf4j
-@Api("微信用户相关接口")
+@Api(tags = "微信用户相关接口")
 @RestController
 @RequestMapping("/user/user")
 public class UserController{

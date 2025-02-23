@@ -4,6 +4,25 @@
 <mapper namespace="com.sky.mapper.ShoppingCartMapper">
 
 
+    <delete id="deleteById">
+        delete from  sky_take_out.shopping_cart
+        <where>
+            <if test="userId!=null">
+                user_id=#{userId}
+            </if>
+        <if test="dishId!=null">
+           and dish_id=#{dishId}
+        </if>
+        <if test="setmealId!=null">
+            and setmeal_id=#{setmealId}
+        </if>
+
+        </where>
+
+    </delete>
+
+    <!--这里是套餐和菜品一起查询了，动态sql的优势-->
+
     <select id="list" resultType="com.sky.entity.ShoppingCart">
     select * from sky_take_out.shopping_cart
 
